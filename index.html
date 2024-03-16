@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polyp Detection System</title>
+    <style>
+        /* Your CSS styles here */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Your HTML content here -->
+
+        <form id="uploadForm" enctype="multipart/form-data">
+            <label for="imageFile" class="custom-file-upload">Choose Image</label>
+            <input type="file" name="imageFile" id="imageFile" accept="image/*">
+            <button type="submit">Detect Polyp</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var formData = new FormData();
+            formData.append('file', document.getElementById('imageFile').files[0]);
+            
+            fetch('/detect_polyp', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.polyp_detected) {
+                        document.getElementById('result').innerHTML = '<p>Polyp detected!</p>';
+                    } else {
+                        document.getElementById('result').innerHTML = '<p>No polyp detected.</p>';
+                    }
+                } else {
+                    document.getElementById('result').innerHTML = '<p>Error: ' + data.error + '</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('result').innerHTML = '<p>An error occurred. Please try again.</p>';
+            });
+        });
+    </script>
+</body>
+</html>
